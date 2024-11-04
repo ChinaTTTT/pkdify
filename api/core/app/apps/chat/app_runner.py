@@ -183,20 +183,20 @@ class ChatAppRunner(AppRunner):
             context=context,
             memory=memory,
         )
-
+        logging.info(f"PK ver. Prompt messages: {prompt_messages}")
         # check hosting moderation
         hosting_moderation_result = self.check_hosting_moderation(
             application_generate_entity=application_generate_entity,
             queue_manager=queue_manager,
             prompt_messages=prompt_messages,
         )
-
+        logging.info(f"PK ver. Hosting moderation result: {hosting_moderation_result}")
         if hosting_moderation_result:
             return
 
         # Re-calculate the max tokens if sum(prompt_token +  max_tokens) over model token limit
         self.recalc_llm_max_tokens(model_config=application_generate_entity.model_conf, prompt_messages=prompt_messages)
-
+        logging.info(f"PK ver. Recalc llm max tokens: {prompt_messages}")
         # Invoke model
         model_instance = ModelInstance(
             provider_model_bundle=application_generate_entity.model_conf.provider_model_bundle,
@@ -212,8 +212,9 @@ class ChatAppRunner(AppRunner):
             stream=application_generate_entity.stream,
             user=application_generate_entity.user_id,
         )
-
+        logging.info(f"PK ver. Invoke result: {invoke_result}")
         # handle invoke result
         self._handle_invoke_result(
             invoke_result=invoke_result, queue_manager=queue_manager, stream=application_generate_entity.stream
         )
+        logging.info(f"PK ver. Handle invoke result: {invoke_result}")
